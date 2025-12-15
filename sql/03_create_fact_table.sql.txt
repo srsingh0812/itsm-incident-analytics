@@ -1,0 +1,61 @@
+-- =========================================
+-- STEP 3: Create Incident Fact Table
+-- Purpose: Analytics-ready dataset
+-- =========================================
+
+DROP TABLE IF EXISTS public.incident_fact;
+
+CREATE TABLE public.incident_fact AS
+SELECT
+    number,
+    incident_state,
+    reassignment_count,
+    reopen_count,
+    sys_mod_count,
+    made_sla,
+    caller_id,
+    opened_by,
+    contact_type,
+    location,
+    category,
+    subcategory,
+    u_symptom,
+    impact,
+    urgency,
+    assignment_group,
+    assigned_to,
+    knowledge,
+    u_priority_confirmation,
+    notify,
+    problem_id,
+    rfc,
+    caused_by,
+    closed_code,
+    resolved_by,
+
+    opened_at,
+    sys_updated_at,
+    closed_at,
+    final_resolved_at,
+
+    resolution_time_hours,
+    aging_days,
+    priority,
+    sla_breach_flag,
+
+    -- Time aggregation
+    DATE_TRUNC('month', opened_at::timestamp)::DATE AS created_month,
+
+    -- Active flag
+    CASE
+        WHEN incident_state IN (
+            'Active',
+            'New',
+            'Awaiting User Info',
+            'Awaiting Problem'
+        ) THEN 1
+        ELSE 0
+    END AS is_active
+
+FROM public.incident_raw
+WHERE opened_at IS NOT NULL;
