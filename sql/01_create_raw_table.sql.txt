@@ -1,0 +1,44 @@
+-- =========================================
+-- STEP 1: Create Raw Incident Table
+-- Purpose: Store cleaned CSV exactly as-is
+-- =========================================
+
+DROP TABLE IF EXISTS public.incident_raw;
+
+CREATE TABLE public.incident_raw (
+    number                      TEXT,
+    incident_state              TEXT,
+    reassignment_count          INTEGER,
+    reopen_count                INTEGER,
+    sys_mod_count               INTEGER,
+    made_sla                    BOOLEAN,
+    caller_id                   TEXT,
+    opened_by                   TEXT,
+    contact_type                TEXT,
+    location                    TEXT,
+    category                    TEXT,
+    subcategory                 TEXT,
+    u_symptom                   TEXT,
+    impact                      TEXT,
+    urgency                     TEXT,
+    assignment_group            TEXT,
+    assigned_to                 TEXT,
+    knowledge                   BOOLEAN,
+    u_priority_confirmation     BOOLEAN,
+    notify                      TEXT,
+    problem_id                  TEXT,
+    rfc                         TEXT,
+    caused_by                   TEXT,
+    closed_code                 TEXT,
+    resolved_by                 TEXT,
+    opened_at                   TIMESTAMP,
+    sys_updated_at              TIMESTAMP,
+    closed_at                   TIMESTAMP,
+    final_resolved_at           TIMESTAMP,
+    resolution_time_hours       NUMERIC(10,2),
+    aging_days                  INTEGER,
+    priority                    INTEGER,
+    sla_breach_flag             INTEGER,
+    created_month               DATE,
+    is_active                   INTEGER
+);

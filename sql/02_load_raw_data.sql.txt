@@ -1,0 +1,47 @@
+-- =========================================
+-- STEP 2: Load Cleaned CSV into Raw Table
+-- =========================================
+
+-- IMPORTANT:
+-- Update the file path to where the CSV exists on YOUR machine
+
+COPY public.incident_raw (
+    number,
+    incident_state,
+    reassignment_count,
+    reopen_count,
+    sys_mod_count,
+    made_sla,
+    caller_id,
+    opened_by,
+    contact_type,
+    location,
+    category,
+    subcategory,
+    u_symptom,
+    impact,
+    urgency,
+    assignment_group,
+    assigned_to,
+    knowledge,
+    u_priority_confirmation,
+    notify,
+    problem_id,
+    rfc,
+    caused_by,
+    closed_code,
+    resolved_by,
+    opened_at,
+    sys_updated_at,
+    closed_at,
+    final_resolved_at,
+    resolution_time_hours,
+    aging_days,
+    priority,
+    sla_breach_flag,
+    created_month,
+    is_active
+)
+FROM 'C:/Users/YourName/Documents/GitHub/itsm-incident-analytics/data/processed/clean_incidents.csv'
+DELIMITER ','
+CSV HEADER;
