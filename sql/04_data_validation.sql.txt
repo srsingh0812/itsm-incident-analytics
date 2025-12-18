@@ -1,0 +1,101 @@
+-- =========================================
+-- STEP 4: Data Validation Checks
+-- Purpose: Ensure data correctness before KPI analysis
+-- Database: PostgreSQL
+-- =========================================
+
+-- -------------------------------------------------
+-- 1. Row count sanity check
+-- -------------------------------------------------
+SELECT COUNT(*) AS total_records
+FROM public.incident_fact;
+
+
+-- -------------------------------------------------
+-- 2. NULL checks on critical timestamp fields
+-- -------------------------------------------------
+SELECT
+    COUNT(*) FILTER (WHERE opened_at IS NULL)        AS null_opened_at,
+    COUNT(*) FILTER (WHERE final_resolved_at IS NULL) AS null_final_resolved_at
+FROM public.incident_fact;
+
+
+-- -------------------------------------------------
+-- 3. Resolution time data type verification
+-- -------------------------------------------------
+SELECT
+    column_name,
+    data_type
+FROM information_schema.columns
+WHERE table_name = 'incident_fact'
+  AND column_name = 'resolution_time_hours';
+
+
+-- -------------------------------------------------
+-- 4. Negative resolution time check
+-- -------------------------------------------------
+SELECT COUNT(*) AS negative_resolution_time
+FROM public.incident_fact
+WHERE resolution_time_hours < 0;
+
+
+-- -------------------------------------------------
+-- 5. Aging days sanity check
+-- -------------------------------------------------
+SELECT COUNT(*) AS negative_aging_days
+FROM public.incident_fact
+WHERE aging_days < 0;
+
+
+-- -------------------------------------------------
+-- 6. SLA breach flag validation
+-- -------------------------------------------------
+-- Expect only 0 or 1
+SELECT
+    sla_breach_flag,
+    COUNT(*) AS record_count
+FROM public.incident_fact
+GROUP BY sla_breach_flag
+ORDER BY sla_breach_flag;
+
+
+-- -------------------------------------------------
+-- 7. Priority range validation
+-- -------------------------------------------------
+-- Expected values: 1 (Critical) to 4 (Low)
+SELECT
+    priority,
+    COUNT(*) AS record_count
+FROM public.incident_fact
+GROUP BY priority
+ORDER BY priority;
+
+
+-- -------------------------------------------------
+-- 8. Active flag validation
+-- -------------------------------------------------
+SELECT
+    is_active,
+    COUNT(*) AS record_count
+FROM public.incident_fact
+GROUP BY is_active;
+
+
+-- -------------------------------------------------
+-- 9. Incident state vs active flag consistency
+-- -------------------------------------------------
+SELECT
+    incident_state,
+    is_active,
+    COUNT(*) AS record_count
+FROM public.incident_fact
+GROUP BY incident_state, is_active
+ORDER BY incident_state;
+
+
+-- -------------------------------------------------
+-- 10. Created month completeness check
+-- -------------------------------------------------
+SELECT
+    COUNT(*) FILTER (WHERE created_month IS NULL) AS null_created_month
+FROM public.incident_fact;
