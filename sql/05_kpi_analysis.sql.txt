@@ -1,0 +1,164 @@
+-- ============================================================
+-- STEP 5: KPI ANALYSIS (ITSM)
+-- Purpose:
+-- Compute core ITSM KPIs from validated incident_fact table
+-- These KPIs are used by Service Managers, Ops Leads,
+-- and SLA Governance teams
+-- ============================================================
+
+
+-- ============================================================
+-- 5.1 Overall Incident Volume
+-- ============================================================
+
+SELECT
+    COUNT(*) AS total_incidents
+FROM public.incident_fact;
+
+
+-- ============================================================
+-- 5.2 Active vs Resolved Incident Count
+-- ============================================================
+
+SELECT
+    is_active,
+    COUNT(*) AS incident_count
+FROM public.incident_fact
+GROUP BY is_active;
+
+
+-- ============================================================
+-- 5.3 SLA Compliance Percentage (Overall)
+-- SLA met = sla_breach_flag = 0
+-- ============================================================
+
+SELECT
+    ROUND(
+        100.0 * SUM(CASE WHEN sla_breach_flag = 0 THEN 1 ELSE 0 END) / COUNT(*),
+        2
+    ) AS sla_compliance_percentage
+FROM public.incident_fact;
+
+
+-- ============================================================
+-- 5.4 SLA Compliance by Priority
+-- Helps identify high-risk priority categories
+-- ============================================================
+
+SELECT
+    priority,
+    COUNT(*) AS total_incidents,
+    SUM(CASE WHEN sla_breach_flag = 1 THEN 1 ELSE 0 END) AS breached_incidents,
+    ROUND(
+        100.0 * SUM(CASE WHEN sla_breach_flag = 0 THEN 1 ELSE 0 END) / COUNT(*),
+        2
+    ) AS sla_compliance_percentage
+FROM public.incident_fact
+GROUP BY priority
+ORDER BY priority;
+
+
+-- ============================================================
+-- 5.5 Mean Time To Resolution (MTTR) – Overall
+-- ============================================================
+
+SELECT
+    ROUND(AVG(resolution_time_hours), 2) AS mttr_hours
+FROM public.incident_fact
+WHERE resolution_time_hours IS NOT NULL;
+
+
+-- ============================================================
+-- 5.6 MTTR by Priority
+-- Indicates operational efficiency for critical tickets
+-- ============================================================
+
+SELECT
+    priority,
+    COUNT(*) AS incident_count,
+    ROUND(AVG(resolution_time_hours), 2) AS mttr_hours
+FROM public.incident_fact
+WHERE resolution_time_hours IS NOT NULL
+GROUP BY priority
+ORDER BY priority;
+
+
+-- ============================================================
+-- 5.7 Incident Aging Distribution (Open Tickets)
+-- Used for backlog and escalation monitoring
+-- ============================================================
+
+SELECT
+    CASE
+        WHEN aging_days <= 1 THEN '0–1 days'
+        WHEN aging_days BETWEEN 2 AND 3 THEN '2–3 days'
+        WHEN aging_days BETWEEN 4 AND 7 THEN '4–7 days'
+        WHEN aging_days BETWEEN 8 AND 14 THEN '8–14 days'
+        ELSE '15+ days'
+    END AS aging_bucket,
+    COUNT(*) AS incident_count
+FROM public.incident_fact
+WHERE is_active = 1
+GROUP BY aging_bucket
+ORDER BY incident_count DESC;
+
+
+-- ============================================================
+-- 5.8 Monthly Incident Trend
+-- Supports workload & capacity planning
+-- ============================================================
+
+SELECT
+    created_month,
+    COUNT(*) AS total_incidents
+FROM public.incident_fact
+GROUP BY created_month
+ORDER BY created_month;
+
+
+-- ============================================================
+-- 5.9 Monthly SLA Breach Trend
+-- Highlights deterioration or improvement over time
+-- ============================================================
+
+SELECT
+    created_month,
+    COUNT(*) AS total_incidents,
+    SUM(CASE WHEN sla_breach_flag = 1 THEN 1 ELSE 0 END) AS breached_incidents
+FROM public.incident_fact
+GROUP BY created_month
+ORDER BY created_month;
+
+
+-- ============================================================
+-- 5.10 Reopened Incidents Analysis
+-- Indicates quality of resolution
+-- ============================================================
+
+SELECT
+    COUNT(*) AS reopened_incidents
+FROM public.incident_fact
+WHERE reopen_count > 0;
+
+
+-- ============================================================
+-- 5.11 Reassignment Analysis
+-- High reassignment indicates poor routing
+-- ============================================================
+
+SELECT
+    CASE
+        WHEN reassignment_count = 0 THEN 'No Reassignment'
+        WHEN reassignment_count BETWEEN 1 AND 2 THEN '1–2 Reassignments'
+        ELSE '3+ Reassignments'
+    END AS reassignment_bucket,
+    COUNT(*) AS incident_count
+FROM public.incident_fact
+GROUP BY reassignment_bucket
+ORDER BY incident_count DESC;
+
+
+-- ============================================================
+-- STEP 5 COMPLETE
+-- KPI layer is ready for visualization (Power BI)
+-- ============================================================
