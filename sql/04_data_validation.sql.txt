@@ -1,28 +1,26 @@
--- =========================================
--- STEP 4: Data Validation Checks
--- Purpose: Ensure data correctness before KPI analysis
--- Database: PostgreSQL
--- =========================================
+-- ============================================================
+-- STEP 4: DATA VALIDATION & TYPE CORRECTION
+-- Purpose:
+-- Validate analytical columns in incident_fact
+-- Detect hidden data quality issues before KPI computation
+-- Fix incorrect data types permanently
+-- ============================================================
 
--- -------------------------------------------------
--- 1. Row count sanity check
--- -------------------------------------------------
-SELECT COUNT(*) AS total_records
+
+-- ============================================================
+-- 4.1 Validate table row count
+-- Ensures data loaded correctly from raw → fact
+-- ============================================================
+
+SELECT COUNT(*) AS total_incidents
 FROM public.incident_fact;
 
 
--- -------------------------------------------------
--- 2. NULL checks on critical timestamp fields
--- -------------------------------------------------
-SELECT
-    COUNT(*) FILTER (WHERE opened_at IS NULL)        AS null_opened_at,
-    COUNT(*) FILTER (WHERE final_resolved_at IS NULL) AS null_final_resolved_at
-FROM public.incident_fact;
+-- ============================================================
+-- 4.2 Validate Resolution Time data type
+-- Resolution time is critical for MTTR & SLA metrics
+-- ============================================================
 
-
--- -------------------------------------------------
--- 3. Resolution time data type verification
--- -------------------------------------------------
 SELECT
     column_name,
     data_type
@@ -31,71 +29,115 @@ WHERE table_name = 'incident_fact'
   AND column_name = 'resolution_time_hours';
 
 
--- -------------------------------------------------
--- 4. Negative resolution time check
--- -------------------------------------------------
+-- ============================================================
+-- 4.3 Check for negative resolution times
+-- Negative values indicate incorrect timestamps or logic
+-- ============================================================
+
 SELECT COUNT(*) AS negative_resolution_time
 FROM public.incident_fact
-WHERE resolution_time_hours < 0;
+WHERE resolution_time_hours::numeric < 0;
 
 
--- -------------------------------------------------
--- 5. Aging days sanity check
--- -------------------------------------------------
-SELECT COUNT(*) AS negative_aging_days
-FROM public.incident_fact
-WHERE aging_days < 0;
+-- ============================================================
+-- 4.4 Permanently fix resolution_time_hours data type
+-- CSV imports often load numeric columns as TEXT
+-- ============================================================
+
+ALTER TABLE public.incident_fact
+ALTER COLUMN resolution_time_hours
+TYPE NUMERIC
+USING resolution_time_hours::numeric;
 
 
--- -------------------------------------------------
--- 6. SLA breach flag validation
--- -------------------------------------------------
--- Expect only 0 or 1
+-- ============================================================
+-- 4.5 Validate SLA breach flag data type
+-- This column must be numeric for KPI calculations
+-- ============================================================
+
 SELECT
-    sla_breach_flag,
-    COUNT(*) AS record_count
-FROM public.incident_fact
-GROUP BY sla_breach_flag
-ORDER BY sla_breach_flag;
+    column_name,
+    data_type
+FROM information_schema.columns
+WHERE table_name = 'incident_fact'
+  AND column_name = 'sla_breach_flag';
 
 
--- -------------------------------------------------
--- 7. Priority range validation
--- -------------------------------------------------
--- Expected values: 1 (Critical) to 4 (Low)
+-- ============================================================
+-- 4.6 Inspect SLA breach flag values
+-- Ensures only valid binary values exist
+-- ============================================================
+
+SELECT DISTINCT sla_breach_flag
+FROM public.incident_fact;
+
+
+-- ============================================================
+-- 4.7 Permanently convert SLA breach flag to INTEGER
+-- Fixes TEXT → INTEGER mismatch
+-- ============================================================
+
+ALTER TABLE public.incident_fact
+ALTER COLUMN sla_breach_flag
+TYPE INTEGER
+USING sla_breach_flag::INTEGER;
+
+
+-- ============================================================
+-- 4.8 Enforce SLA breach flag integrity
+-- Prevents invalid future inserts
+-- ============================================================
+
+ALTER TABLE public.incident_fact
+ADD CONSTRAINT chk_sla_breach_flag
+CHECK (sla_breach_flag IN (0, 1));
+
+
+-- ============================================================
+-- 4.9 Validate priority column type
+-- Priority must be numeric for SLA rules
+-- ============================================================
+
 SELECT
-    priority,
-    COUNT(*) AS record_count
+    column_name,
+    data_type
+FROM information_schema.columns
+WHERE table_name = 'incident_fact'
+  AND column_name = 'priority';
+
+
+-- ============================================================
+-- 4.10 Check priority value range
+-- ============================================================
+
+SELECT DISTINCT priority
 FROM public.incident_fact
-GROUP BY priority
 ORDER BY priority;
 
 
--- -------------------------------------------------
--- 8. Active flag validation
--- -------------------------------------------------
-SELECT
-    is_active,
-    COUNT(*) AS record_count
+-- ============================================================
+-- 4.11 Validate final_resolved_at completeness
+-- Ensures no NULL values for closed / resolved incidents
+-- ============================================================
+
+SELECT COUNT(*) AS null_final_resolved_at
 FROM public.incident_fact
-GROUP BY is_active;
+WHERE final_resolved_at IS NULL;
 
 
--- -------------------------------------------------
--- 9. Incident state vs active flag consistency
--- -------------------------------------------------
-SELECT
-    incident_state,
-    is_active,
-    COUNT(*) AS record_count
+-- ============================================================
+-- 4.12 Validate active flag logic
+-- Active tickets should not be marked as resolved
+-- ============================================================
+
+SELECT COUNT(*) AS invalid_active_records
 FROM public.incident_fact
-GROUP BY incident_state, is_active
-ORDER BY incident_state;
+WHERE is_active = 1
+  AND incident_state IN ('Resolved');
 
 
--- -------------------------------------------------
--- 10. Created month completeness check
--- -------------------------------------------------
-SELECT
-    COUNT(*) FILTER (WHERE created_month IS NULL) AS null_created_month
-FROM public.incident_fact;
+-- ============================================================
+-- STEP 4 COMPLETE
+-- Dataset is now validated, typed correctly,
+-- and safe for KPI computation
+-- ============================================================
