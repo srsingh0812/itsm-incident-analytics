@@ -1,166 +1,99 @@
-# Phase 3 - Power BI Dashboarding (ITSM Incident Analytics)
+# 💼 Phase 3 - Power BI Dashboarding (ITSM Incident Analytics)
 
-## Overview
+---
+
+## 📌 Overview
 
 Phase 3 focuses on visualizing validated ITSM KPIs using Power BI.
 
-By this stage of the project:
+At this stage of the project:
 - Phase 1 handled data preparation and cleaning using Excel and Power Query
 - Phase 2 implemented data validation and KPI logic using PostgreSQL
 
-In this phase, Power BI is used only for visualization.
-All data logic and calculations are handled upstream in SQL.
+In this phase, Power BI is used strictly for visualization.
+All business logic and calculations are handled upstream in SQL.
 
 ---
 
-## Objective of Phase 3
+## 🎯 Objective of Phase 3
 
 The objectives of this phase are:
-- Visualize ITSM KPIs built in PostgreSQL
-- Provide operational and management-level insights
-- Ensure Power BI results exactly match SQL outputs
-- Follow real-world ITSM reporting practices
+
+- 📊 Visualize ITSM KPIs built in PostgreSQL
+- 📈 Provide operational and management-level insights
+- ✅ Ensure Power BI results exactly match SQL outputs
+- 🧩 Follow real-world ITSM reporting practices
 
 ---
 
-## Data Source
+## 🗄 Data Source
 
-The Power BI dashboard connects to the following source:
-- Database: PostgreSQL
-- Database name: itsm_analytics
-- Table used: incident_fact
+Power BI connects directly to PostgreSQL with the following configuration:
 
-Only the analytics-ready fact table is used.
-Raw tables and CSV files are not consumed in Power BI.
-
----
-
-## Power BI Connection Approach
-
-The following approach is used:
-- Connection type: PostgreSQL (Import mode)
-- Authentication: Database credentials
-- Transformations: None in Power BI
-- Business logic: Implemented in SQL, not DAX
-
-This ensures PostgreSQL remains the single source of truth.
+- Database: `itsm_analytics`
+- Table: `incident_fact`
+- Connection Mode: Import
+- Refresh: Manual (controlled)
 
 ---
 
-## Data Model Design
+## 📊 KPIs Visualized
 
-The Power BI data model follows a simple structure:
-- Single fact table: incident_fact
-- No table relationships
-- All KPIs implemented as measures
+The following KPIs are visualized in Power BI:
 
-This design improves clarity, performance, and maintainability.
-
----
-
-## Core Measures Implemented
-
-The following measures are created in Power BI:
 - Total Incidents
-- Active Incidents
 - SLA Compliance Percentage
+- SLA Breach Count
 - Mean Time to Resolution (MTTR)
-
-All measures are validated against SQL queries.
-
----
-
-## Dashboard Structure
-
-### Page 1 - Executive Overview
-
-This page is designed for service managers and leadership.
-
-It includes:
-- KPI cards for Total Incidents, Active Incidents, SLA Compliance, and MTTR
-- Monthly incident trend chart
-
-Purpose:
-- Provide a high-level operational health view
-- Monitor overall SLA performance
+- Average Incident Aging (Days)
+- Active vs Closed Incidents
+- Monthly Incident Trends
+- Priority-wise Incident Distribution
 
 ---
 
-### Page 2 - SLA and Priority Analysis
+## 🛠 Dashboard Design Principles
 
-This page focuses on performance and risk areas.
+The dashboard follows these principles:
 
-It includes:
-- SLA compliance by priority
-- MTTR by priority
-
-Purpose:
-- Identify high-risk priorities
-- Support prioritization and decision-making
+- One KPI = One clear visual
+- No calculations inside Power BI visuals
+- SQL is the single source of truth
+- Simple layout focused on decision-making
+- Consistent filters across all visuals
 
 ---
 
-### Page 3 - Backlog and Aging
+## 🔍 Validation Approach
 
-This page supports operational teams.
+To ensure accuracy:
 
-It includes:
-- Aging distribution of open incidents
-- Active backlog analysis
-
-Purpose:
-- Monitor unresolved incidents
-- Support escalation and workload planning
+- SQL KPI outputs were cross-checked against Power BI values
+- Random samples were manually verified
+- Filters applied in Power BI were matched with SQL WHERE clauses
+- Any mismatch was treated as a data issue, not a visualization issue
 
 ---
 
-## Filters and Interactivity
+## 🧠 Key Learnings from Phase 3
 
-The following slicers are added:
-- Priority
-- Incident state
-- Assignment group
-- Created month
-
-These allow interactive analysis without altering KPI logic.
+- Power BI should visualize, not calculate
+- Clean SQL logic simplifies dashboards
+- KPI trust depends on upstream data quality
+- ITSM reporting improves when metrics are clearly defined
 
 ---
 
-## Validation and Accuracy
+## 📂 Project Status
 
-Before finalizing the dashboards:
-- KPI values were compared with SQL outputs
-- No discrepancies were found
-- Any mismatch was resolved in DAX, not SQL
-
-This ensures complete trust in the reported metrics.
+- Phase 1: Data Preparation and ETL — Completed
+- Phase 2: SQL Data Modeling and KPI Analysis — Completed
+- Phase 3: Power BI Dashboarding — Completed
 
 ---
 
-## Repository Artifacts
+## 🚀 Next Steps
 
-The following file is included in this phase:
-
-powerbi/
-  itsm_incident_dashboard.pbix
-
-Notes:
-- The PBIX file does not store database credentials
-- Users must configure their own PostgreSQL connection to refresh data
-
----
-
-## Key Learnings
-
-- Power BI should visualize data, not fix it
-- Clean SQL simplifies dashboard logic
-- Measure-driven design improves accuracy
-- Validation between SQL and BI is critical
-
----
-
-## Project Status
-
-Phase 1 - Data Preparation and ETL - Completed  
-Phase 2 - SQL Analytics and KPI Computation - Completed  
-Phase 3 - Power BI Dashboarding - Completed
+- Publish dashboard screenshots
+- Add executive summary visuals
+- Extend analysis with historical trend comparisons
