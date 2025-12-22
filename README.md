@@ -104,9 +104,21 @@ itsm-incident-analytics/
 ├── excel/
 │   └── itsm_incident_etl.xlsx
 │
+├── sql/
+│   ├── 01_create_raw_table.sql
+│   ├── 02_load_raw_data.sql
+│   ├── 03_create_fact_table.sql
+│   ├── 04_data_validation.sql
+│   └── 05_kpi_analysis.sql
+│
+├── powerbi/
+│   └── itsm_incident_dashboard.pbix
+│
 ├── docs/
 │   ├── problem_statement.md
-│   └── kpi_definitions.md
+│   ├── kpi_definitions.md
+│   ├── phase_2_sql.md
+│   └── phase_3_powerbi.md
 │
 └── README.md
 ```
