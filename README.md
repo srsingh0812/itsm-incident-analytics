@@ -114,8 +114,8 @@ itsm-incident-analytics/
 
 ## 📌 Current Status
 - Phase 1 (Excel ETL): Completed  
-- Phase 2 (SQL Analytics): In progress  
-- Phase 3 (Power BI Dashboards): Planned  
+- Phase 2 (SQL Analytics): Completed  
+- Phase 3 (Power BI Dashboards): In Progress  
 
 ---
 
