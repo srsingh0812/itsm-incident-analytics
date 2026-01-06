@@ -138,11 +138,3 @@ This highlights that:
 
 ---
 
-## 📂 Project Structure
-```
-explainability/
-├── feature_importance_classification.csv
-├── feature_importance_regression.csv
-├── explainability_analysis.ipynb
-└── README.md
-```
