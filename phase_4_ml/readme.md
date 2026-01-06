@@ -259,12 +259,6 @@ Phase 4 enables:
 
 ---
 
-## 🧠 Interview One-Liner
-
-> "In Phase 4, I built explainable ML models to predict SLA breach risk and resolution time, selecting Random Forest models based on recall and error reduction aligned with operational impact."
-
----
-
 ## 📂 Project Structure
 ```
 phase_4_ml/
