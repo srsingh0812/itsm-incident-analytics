@@ -132,17 +132,3 @@ This highlights that:
 
 ---
 
-## 🧠 Interview Talking Points
-
-> "Our explainability analysis revealed that **incident aging accounts for 96-99% of model predictions**, meaning that how long a ticket stays open is far more important than its initial priority. This led us to recommend **aging-based alerts** and **early escalation policies** rather than relying solely on priority-based workflows."
-
----
-
-## 📂 Project Structure
-```
-explainability/
-├── feature_importance_classification.csv
-├── feature_importance_regression.csv
-├── explainability_analysis.ipynb
-└── README.md
-```
