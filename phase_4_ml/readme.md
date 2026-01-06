@@ -164,6 +164,7 @@ Convert preprocessed data into business-meaningful ML features.
 - Reduces missed SLA breaches
 
 ### ✅ Final Choice: Random Forest Classifier
+**Reason:** Fewer missed SLA breaches directly reduces operational risk.
 
 ---
 
@@ -196,21 +197,20 @@ Convert preprocessed data into business-meaningful ML features.
 - Better handling of complex resolution behavior
 
 ### ✅ Final Choice: Random Forest Regressor
+**Reason:** Significant MAE reduction improves capacity planning accuracy.
 
 ---
 
-## 📓 Notebook 06 — Model Evaluation & Selection
+## 📊 Final Model Selection Summary
 
-### Final Model Comparison
-
-#### Classification
+### Classification
 
 | Model | Recall | Missed Breaches |
 |-------|--------|-----------------|
 | Logistic Regression | 0.99 | 12 |
 | **Random Forest** | **1.00** | **9** |
 
-#### Regression
+### Regression
 
 | Model | MAE (hrs) | RMSE (hrs) |
 |-------|-----------|------------|
@@ -252,7 +252,7 @@ Phase 4 enables:
 
 ## 🔜 Next Steps
 
-- [ ] **Notebook 07** — Model Explainability (Feature importance & SHAP)
+- [ ] **Model Explainability** — Feature importance & SHAP analysis
 - [ ] **MLOps Extensions** — MLflow tracking, model monitoring
 - [ ] **Production Deployment** — Azure/Databricks integration
 - [ ] **Drift Detection** — Continuous monitoring setup
@@ -273,8 +273,7 @@ phase_4_ml/
 │   ├── 02_data_preprocessing.ipynb
 │   ├── 03_feature_engineering.ipynb
 │   ├── 04_classification_models.ipynb
-│   ├── 05_regression_models.ipynb
-│   └── 06_model_evaluation.ipynb
+│   └── 05_regression_models.ipynb
 ├── data/
 │   ├── incident_ml_raw.csv
 │   ├── incident_ml_preprocessed.csv
