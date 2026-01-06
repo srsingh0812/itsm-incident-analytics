@@ -267,7 +267,8 @@ phase_4_ml/
 │   ├── 02_data_preprocessing.ipynb
 │   ├── 03_feature_engineering.ipynb
 │   ├── 04_classification_models.ipynb
-│   └── 05_regression_models.ipynb
+│   ├── 05_regression_models.ipynb
+│   └── 06_model_explainability.ipynb
 ├── data/
 │   ├── incident_ml_raw.csv
 │   ├── incident_ml_preprocessed.csv
